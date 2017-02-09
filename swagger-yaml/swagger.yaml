@@ -35,7 +35,7 @@ paths:
     post:
       tags:
       - "pet"
-      summary: "Add a new pet to the store lpe"
+      summary: "Add a new pet to the store lpe ora"
       operationId: "addPet"
       consumes:
       - "application/json"
