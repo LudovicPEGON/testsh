@@ -1,695 +1,508 @@
 ---
 swagger: "2.0"
 info:
-  description: "This is a sample server Petstore server.  You can find \nout more\
-    \ about Swagger at \n[http://swagger.io](http://swagger.io) or on \n[irc.freenode.net,\
-    \ #swagger](http://swagger.io/irc/).\n"
+  description: "This is a storage API"
   version: "1.0.0"
-  title: "Swagger Petstore"
-  termsOfService: "http://swagger.io/terms/"
+  title: "Storage API"
   contact:
-    email: "apiteam@swagger.io"
+    email: "you@your-company.com"
   license:
     name: "Apache 2.0"
     url: "http://www.apache.org/licenses/LICENSE-2.0.html"
 host: "virtserver.swaggerhub.com"
-basePath: "/lpegon/test/1.0.0"
+basePath: "/EVER_TEAM_SOFTWARE/Storage/1.0.0"
 tags:
-- name: "pet"
-  description: "Everything about your Pets"
-  externalDocs:
-    description: "Find out more"
-    url: "http://swagger.io"
-- name: "store"
-  description: "Access to Petstore orders"
-- name: "user"
-  description: "Operations about user"
-  externalDocs:
-    description: "Find out more about our store"
-    url: "http://swagger.io"
+- name: "Repositories"
+  description: "Operations available for repositories"
+- name: "Directories"
+  description: "Operations available for directories"
+- name: "Files"
+  description: "Operations available for files"
 schemes:
 - "https"
-- "http"
 paths:
-  /pet:
-    post:
-      tags:
-      - "pet"
-      summary: "Add a new pet to the store lpe ora222"
-      operationId: "addPet"
-      consumes:
-      - "application/json"
-      - "application/xml"
-      produces:
-      - "application/json"
-      - "application/xml"
-      parameters:
-      - in: "body"
-        name: "body"
-        description: "Pet object that needs to be added to the store"
-        required: true
-        schema:
-          $ref: "#/definitions/Pet"
-      responses:
-        405:
-          description: "Invalid input"
-      security:
-      - petstore_auth:
-        - "write:pets"
-        - "read:pets"
-    put:
-      tags:
-      - "pet"
-      summary: "Update an existing pet"
-      operationId: "updatePet"
-      consumes:
-      - "application/json"
-      - "application/xml"
-      produces:
-      - "application/json"
-      - "application/xml"
-      parameters:
-      - in: "body"
-        name: "body"
-        description: "Pet object that needs to be added to the store"
-        required: true
-        schema:
-          $ref: "#/definitions/Pet"
-      responses:
-        400:
-          description: "Invalid ID supplied"
-        404:
-          description: "Pet not found"
-        405:
-          description: "Validation exception"
-      security:
-      - petstore_auth:
-        - "write:pets"
-        - "read:pets"
-  /pet/findByStatus:
+  /repositories:
     get:
       tags:
-      - "pet"
-      summary: "Finds Pets by status"
-      description: "Multiple status values can be provided with comma separated strings"
-      operationId: "findPetsByStatus"
+      - "Repositories"
+      summary: "Search repositories"
+      description: "you can search for available repositories in the storage service\n"
+      operationId: "listRepositories"
       produces:
       - "application/json"
-      - "application/xml"
-      parameters:
-      - name: "status"
-        in: "query"
-        description: "Status values that need to be considered for filter"
-        required: true
-        type: "array"
-        items:
-          type: "string"
-          enum:
-          - "available"
-          - "pending"
-          - "sold"
-          default: "available"
-        collectionFormat: "multi"
+      parameters: []
       responses:
         200:
-          description: "successful operation"
+          description: "search results matching criteria"
           schema:
             type: "array"
             items:
-              $ref: "#/definitions/Pet"
-        400:
-          description: "Invalid status value"
-      security:
-      - petstore_auth:
-        - "write:pets"
-        - "read:pets"
-  /pet/findByTags:
+              $ref: "#/definitions/ESRepository"
+  /files/{id}:
     get:
       tags:
-      - "pet"
-      summary: "Finds Pets by tags"
-      description: "Muliple tags can be provided with comma separated strings. Use\\\
-        \ \\ tag1, tag2, tag3 for testing."
-      operationId: "findPetsByTags"
+      - "Files"
+      summary: "Get file informations"
+      description: "Get file informations"
+      operationId: "getFile"
       produces:
       - "application/json"
-      - "application/xml"
       parameters:
-      - name: "tags"
+      - name: "id"
+        in: "path"
+        description: "The file's ID"
+        required: true
+        type: "string"
+      - name: "getPermissions"
         in: "query"
-        description: "Tags to filter by"
-        required: true
-        type: "array"
-        items:
-          type: "string"
-        collectionFormat: "multi"
+        description: "set true if you want to get permissions at the same you get\
+          \ files"
+        required: false
+        type: "boolean"
+        default: false
       responses:
         200:
-          description: "successful operation"
+          description: "search results"
           schema:
-            type: "array"
-            items:
-              $ref: "#/definitions/Pet"
-        400:
-          description: "Invalid tag value"
-      security:
-      - petstore_auth:
-        - "write:pets"
-        - "read:pets"
-      deprecated: true
-  /pet/{petId}:
-    get:
-      tags:
-      - "pet"
-      summary: "Find pet by ID"
-      description: "Returns a single pet"
-      operationId: "getPetById"
-      produces:
-      - "application/json"
-      - "application/xml"
-      parameters:
-      - name: "petId"
-        in: "path"
-        description: "ID of pet to return"
-        required: true
-        type: "integer"
-        format: "int64"
-      responses:
-        200:
-          description: "successful operation"
-          schema:
-            $ref: "#/definitions/Pet"
-        400:
-          description: "Invalid ID supplied"
-        404:
-          description: "Pet not found"
-      security:
-      - api_key: []
+            $ref: "#/definitions/ESFile"
     post:
       tags:
-      - "pet"
-      summary: "Updates a pet in the store with form data"
-      operationId: "updatePetWithForm"
-      consumes:
-      - "application/x-www-form-urlencoded"
-      produces:
-      - "application/json"
-      - "application/xml"
-      parameters:
-      - name: "petId"
-        in: "path"
-        description: "ID of pet that needs to be updated"
-        required: true
-        type: "integer"
-        format: "int64"
-      - name: "name"
-        in: "formData"
-        description: "Updated name of the pet"
-        required: false
-        type: "string"
-      - name: "status"
-        in: "formData"
-        description: "Updated status of the pet"
-        required: false
-        type: "string"
-      responses:
-        405:
-          description: "Invalid input"
-      security:
-      - petstore_auth:
-        - "write:pets"
-        - "read:pets"
-    delete:
-      tags:
-      - "pet"
-      summary: "Deletes a pet"
-      operationId: "deletePet"
-      produces:
-      - "application/json"
-      - "application/xml"
-      parameters:
-      - name: "api_key"
-        in: "header"
-        required: false
-        type: "string"
-      - name: "petId"
-        in: "path"
-        description: "Pet id to delete"
-        required: true
-        type: "integer"
-        format: "int64"
-      responses:
-        400:
-          description: "Invalid ID supplied"
-        404:
-          description: "Pet not found"
-      security:
-      - petstore_auth:
-        - "write:pets"
-        - "read:pets"
-  /pet/{petId}/uploadImage:
-    post:
-      tags:
-      - "pet"
-      summary: "uploads an image"
-      operationId: "uploadFile"
+      - "Files"
+      summary: "Insert a new File"
+      description: "Create a new File using file content and required parameters"
+      operationId: "createFile"
       consumes:
       - "multipart/form-data"
       produces:
       - "application/json"
       parameters:
-      - name: "petId"
+      - name: "id"
         in: "path"
-        description: "ID of pet to update"
+        description: "The file's ID"
         required: true
-        type: "integer"
-        format: "int64"
-      - name: "additionalMetadata"
-        in: "formData"
-        description: "Additional data to pass to server"
-        required: false
         type: "string"
-      - name: "file"
+      - name: "content"
         in: "formData"
-        description: "file to upload"
+        description: "Not required in case directory creation"
         required: false
         type: "file"
-      responses:
-        200:
-          description: "successful operation"
-          schema:
-            $ref: "#/definitions/ApiResponse"
-      security:
-      - petstore_auth:
-        - "write:pets"
-        - "read:pets"
-  /store/inventory:
-    get:
-      tags:
-      - "store"
-      summary: "Returns pet inventories by status"
-      description: "Returns a map of status codes to quantities"
-      operationId: "getInventory"
-      produces:
-      - "application/json"
-      parameters: []
-      responses:
-        200:
-          description: "successful operation"
-          schema:
-            type: "object"
-            additionalProperties:
-              type: "integer"
-              format: "int32"
-      security:
-      - api_key: []
-  /store/order:
-    post:
-      tags:
-      - "store"
-      summary: "Place an order for a pet"
-      operationId: "placeOrder"
-      produces:
-      - "application/json"
-      - "application/xml"
-      parameters:
-      - in: "body"
-        name: "body"
-        description: "order placed for purchasing the pet"
-        required: true
-        schema:
-          $ref: "#/definitions/Order"
-      responses:
-        200:
-          description: "successful operation"
-          schema:
-            $ref: "#/definitions/Order"
-        400:
-          description: "Invalid Order"
-  /store/order/{orderId}:
-    get:
-      tags:
-      - "store"
-      summary: "Find purchase order by ID"
-      description: "For valid response try integer IDs with value >= 1 and <= 10.\\\
-        \ \\ Other values will generated exceptions"
-      operationId: "getOrderById"
-      produces:
-      - "application/json"
-      - "application/xml"
-      parameters:
-      - name: "orderId"
-        in: "path"
-        description: "ID of pet that needs to be fetched"
-        required: true
-        type: "integer"
-        maximum: 10
-        minimum: 1
-        format: "int64"
-      responses:
-        200:
-          description: "successful operation"
-          schema:
-            $ref: "#/definitions/Order"
-        400:
-          description: "Invalid ID supplied"
-        404:
-          description: "Order not found"
-    delete:
-      tags:
-      - "store"
-      summary: "Delete purchase order by ID"
-      description: "For valid response try integer IDs with positive integer value.\\\
-        \ \\ Negative or non-integer values will generate API errors"
-      operationId: "deleteOrder"
-      produces:
-      - "application/json"
-      - "application/xml"
-      parameters:
-      - name: "orderId"
-        in: "path"
-        description: "ID of the order that needs to be deleted"
-        required: true
-        type: "integer"
-        minimum: 1
-        format: "int64"
-      responses:
-        400:
-          description: "Invalid ID supplied"
-        404:
-          description: "Order not found"
-  /user:
-    post:
-      tags:
-      - "user"
-      summary: "Create user"
-      description: "This can only be done by the logged in user."
-      operationId: "createUser"
-      produces:
-      - "application/json"
-      - "application/xml"
-      parameters:
-      - in: "body"
-        name: "body"
-        description: "Created user object"
-        required: true
-        schema:
-          $ref: "#/definitions/User"
-      responses:
-        default:
-          description: "successful operation"
-  /user/createWithArray:
-    post:
-      tags:
-      - "user"
-      summary: "Creates list of users with given input array"
-      operationId: "createUsersWithArrayInput"
-      produces:
-      - "application/json"
-      - "application/xml"
-      parameters:
-      - in: "body"
-        name: "body"
-        description: "List of user object"
-        required: true
-        schema:
-          type: "array"
-          items:
-            $ref: "#/definitions/User"
-      responses:
-        default:
-          description: "successful operation"
-  /user/createWithList:
-    post:
-      tags:
-      - "user"
-      summary: "Creates list of users with given input array"
-      operationId: "createUsersWithListInput"
-      produces:
-      - "application/json"
-      - "application/xml"
-      parameters:
-      - in: "body"
-        name: "body"
-        description: "List of user object"
-        required: true
-        schema:
-          type: "array"
-          items:
-            $ref: "#/definitions/User"
-      responses:
-        default:
-          description: "successful operation"
-  /user/login:
-    get:
-      tags:
-      - "user"
-      summary: "Logs user into the system"
-      operationId: "loginUser"
-      produces:
-      - "application/json"
-      - "application/xml"
-      parameters:
-      - name: "username"
+      - name: "name"
         in: "query"
-        description: "The user name for login"
-        required: true
+        description: "if content exists, we takes file name by default"
+        required: false
         type: "string"
-      - name: "password"
+      - name: "description"
         in: "query"
-        description: "The password for login in clear text"
-        required: true
+        required: false
         type: "string"
       responses:
         200:
-          description: "successful operation"
+          description: "If successful, this method returns the created File in the\
+            \ response body"
           schema:
-            type: "string"
-          headers:
-            X-Rate-Limit:
-              type: "integer"
-              format: "int32"
-              description: "calls per hour allowed by the user"
-            X-Expires-After:
-              type: "string"
-              format: "date-time"
-              description: "date in UTC when token expires"
-        400:
-          description: "Invalid username/password supplied"
-  /user/logout:
-    get:
-      tags:
-      - "user"
-      summary: "Logs out current logged in user session"
-      operationId: "logoutUser"
-      produces:
-      - "application/json"
-      - "application/xml"
-      parameters: []
-      responses:
-        default:
-          description: "successful operation"
-  /user/{username}:
-    get:
-      tags:
-      - "user"
-      summary: "Get user by user name"
-      operationId: "getUserByName"
-      produces:
-      - "application/json"
-      - "application/xml"
-      parameters:
-      - name: "username"
-        in: "path"
-        description: "The name that needs to be fetched. Use user1 for testing."
-        required: true
-        type: "string"
-      responses:
-        200:
-          description: "successful operation"
-          schema:
-            $ref: "#/definitions/User"
-        400:
-          description: "Invalid username supplied"
-        404:
-          description: "User not found"
+            $ref: "#/definitions/ESFile"
     put:
       tags:
-      - "user"
-      summary: "Updated user"
-      description: "This can only be done by the logged in user."
-      operationId: "updateUser"
+      - "Files"
+      summary: "Updates a file"
+      description: "Updates a specified file metadata and/or content"
+      operationId: "updateFile"
+      consumes:
+      - "multipart/form-data"
       produces:
       - "application/json"
-      - "application/xml"
       parameters:
-      - name: "username"
+      - name: "id"
         in: "path"
-        description: "name that need to be updated"
+        description: "The file's ID"
         required: true
         type: "string"
-      - in: "body"
-        name: "body"
-        description: "Updated user object"
-        required: true
-        schema:
-          $ref: "#/definitions/User"
+      - name: "content"
+        in: "formData"
+        required: false
+        type: "file"
+      - name: "description"
+        in: "query"
+        required: false
+        type: "string"
       responses:
-        400:
-          description: "Invalid user supplied"
-        404:
-          description: "User not found"
+        200:
+          description: "If successful, this method returns the updated File in the\
+            \ response body"
+          schema:
+            $ref: "#/definitions/ESFile"
     delete:
       tags:
-      - "user"
-      summary: "Delete user"
-      description: "This can only be done by the logged in user."
-      operationId: "deleteUser"
-      produces:
-      - "application/json"
-      - "application/xml"
+      - "Files"
+      summary: "Delete a File"
+      description: "Delete a File or a directory using its id"
+      operationId: "deleteFile"
       parameters:
-      - name: "username"
+      - name: "id"
         in: "path"
-        description: "The name that needs to be deleted"
+        description: "The file's ID"
         required: true
         type: "string"
       responses:
-        400:
-          description: "Invalid username supplied"
-        404:
-          description: "User not found"
-securityDefinitions:
-  petstore_auth:
-    type: "oauth2"
-    authorizationUrl: "http://petstore.swagger.io/oauth/dialog"
-    flow: "implicit"
-    scopes:
-      write:pets: "modify pets in your account"
-      read:pets: "read your pets"
-  api_key:
-    type: "apiKey"
-    name: "api_key"
-    in: "header"
-definitions:
-  Order:
-    type: "object"
-    properties:
-      id:
-        type: "integer"
-        format: "int64"
-      petId:
-        type: "integer"
-        format: "int64"
-      quantity:
-        type: "integer"
-        format: "int32"
-      shipDate:
+        204:
+          description: "Successfully deleted"
+  /files/{id}/checkUpdates:
+    post:
+      tags:
+      - "Files"
+      summary: "Search updated files."
+      description: "Launch a batch which is going to search files which have been\
+        \ updated after a specified date.\n"
+      operationId: "checkUpdates"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "The file's ID"
+        required: true
+        type: "string"
+      - name: "fromDate"
+        in: "query"
+        description: "Return only files modified after this date"
+        required: true
         type: "string"
         format: "date-time"
-      status:
+      responses:
+        200:
+          description: "successfully started"
+  /files/{id}/copy:
+    post:
+      tags:
+      - "Files"
+      summary: "Create a copy"
+      description: "Copy a file of the specified file"
+      operationId: "copyFile"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "The file's ID"
+        required: true
         type: "string"
-        description: "Order Status"
-        enum:
-        - "placed"
-        - "approved"
-        - "delivered"
-      complete:
+      - name: "targetId"
+        in: "query"
+        description: "Target file's ID"
+        required: true
+        type: "string"
+      responses:
+        201:
+          description: "Successfully created"
+          schema:
+            $ref: "#/definitions/ESFile"
+  /files/{id}/move:
+    post:
+      tags:
+      - "Files"
+      summary: "Move a file"
+      description: "Move a file to a specified parent"
+      operationId: "moveFile"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "The file's ID"
+        required: true
+        type: "string"
+      - name: "targetId"
+        in: "query"
+        description: "Target file's ID"
+        required: true
+        type: "string"
+      responses:
+        201:
+          description: "Successfully moved"
+          schema:
+            $ref: "#/definitions/ESFile"
+  /files/{id}/children:
+    get:
+      tags:
+      - "Files"
+      summary: "Get the file children"
+      description: "Get the specified file's direct children"
+      operationId: "getFileChildren"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "The file's ID"
+        required: true
+        type: "string"
+      - name: "getPermissions"
+        in: "query"
+        description: "set true if you want to get permissions at the same you get\
+          \ files"
+        required: false
         type: "boolean"
         default: false
-    xml:
-      name: "Order"
-  Category:
-    type: "object"
-    properties:
-      id:
+      - name: "maxResult"
+        in: "query"
+        description: "Maximum number of files to return. Acceptable values are 0 to\
+          \ 1000. Use -1 for no limit"
+        required: false
         type: "integer"
-        format: "int64"
-      name:
-        type: "string"
-    xml:
-      name: "Category"
-  User:
-    type: "object"
-    properties:
-      id:
-        type: "integer"
-        format: "int64"
-      username:
-        type: "string"
-      firstName:
-        type: "string"
-      lastName:
-        type: "string"
-      email:
-        type: "string"
-      password:
-        type: "string"
-      phone:
-        type: "string"
-      userStatus:
-        type: "integer"
-        format: "int32"
-        description: "User Status"
-    xml:
-      name: "User"
-  Tag:
-    type: "object"
-    properties:
-      id:
-        type: "integer"
-        format: "int64"
-      name:
-        type: "string"
-    xml:
-      name: "Tag"
-  Pet:
-    type: "object"
-    required:
-    - "name"
-    - "photoUrls"
-    properties:
-      id:
-        type: "integer"
-        format: "int64"
-      category:
-        $ref: "#/definitions/Category"
-      name:
-        type: "string"
-        example: "doggie"
-      photoUrls:
-        type: "array"
-        xml:
-          name: "photoUrl"
-          wrapped: true
-        items:
-          type: "string"
+        default: 100
+      responses:
+        200:
+          description: "search results matching criteria"
+          schema:
+            $ref: "#/definitions/ESFileList"
+  /files/{id}/content:
+    get:
       tags:
-        type: "array"
-        xml:
-          name: "tag"
-          wrapped: true
-        items:
-          $ref: "#/definitions/Tag"
-      status:
+      - "Files"
+      summary: "Get the content file"
+      description: "Get the specified file's content"
+      operationId: "getFileContent"
+      produces:
+      - "application/octet-stream"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "The file's ID"
+        required: true
         type: "string"
-        description: "pet status in the store"
-        enum:
-        - "available"
-        - "pending"
-        - "sold"
-    xml:
-      name: "Pet"
-  ApiResponse:
+      responses:
+        200:
+          description: "Successfully retrieved"
+          schema:
+            type: "string"
+            format: "byte"
+  /files/{id}/permissions:
+    get:
+      tags:
+      - "Files"
+      summary: "Get File's Permsissions"
+      description: "Lists a file's permissions"
+      operationId: "getFilePermissions"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "The file's ID"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "search results matching criteria"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/ESPermission"
+definitions:
+  ESRepository:
     type: "object"
     properties:
-      code:
-        type: "integer"
-        format: "int32"
+      id:
+        $ref: "#/definitions/ESFileId"
       type:
         type: "string"
-      message:
+        enum:
+        - "FS"
+        - "GOOGLE"
+        - "ONEDRIVE"
+      name:
         type: "string"
-externalDocs:
-  description: "Find out more about Swagger"
-  url: "http://swagger.io"
+      rootDirectory:
+        type: "string"
+        description: "can be a reference to json file containing all client secrets"
+      clientSecrets:
+        type: "string"
+        description: "can be a reference to json file containing all client secrets"
+  ESFile:
+    type: "object"
+    properties:
+      id:
+        $ref: "#/definitions/ESFileId"
+      parents:
+        type: "array"
+        description: "The files parent list. Some drives juste manage one parent"
+        items:
+          $ref: "#/definitions/ESParent"
+      name:
+        type: "string"
+        example: "My file.txt"
+        description: "The title of the file"
+      fileSize:
+        type: "integer"
+        format: "int64"
+        description: "The size of the file in bytes."
+        readOnly: true
+      directory:
+        type: "boolean"
+        description: "true if file is a directory, false otherwise"
+        readOnly: true
+      description:
+        type: "string"
+        example: "My first file"
+        description: "A short description of the file"
+      mimeType:
+        type: "string"
+        example: "text-plain"
+        description: "The MIME type of the file"
+        readOnly: true
+      creationTime:
+        type: "string"
+        format: "date-time"
+        description: "Creation time for this file"
+        readOnly: true
+      lastModifiedTime:
+        type: "string"
+        format: "date-time"
+        description: "Last time this file was modified by anyone"
+        readOnly: true
+      lastAccessTime:
+        type: "string"
+        format: "date-time"
+        description: "Last time this file was acceded by anyone"
+        readOnly: true
+      lastModifiedUser:
+        $ref: "#/definitions/ESUser"
+      owners:
+        type: "array"
+        items:
+          $ref: "#/definitions/ESUser"
+      permissions:
+        type: "array"
+        items:
+          $ref: "#/definitions/ESPermission"
+      checksum:
+        type: "string"
+        example: "2B693E6A1483B70BF5CD7C511035879E"
+        description: "The file's content  MD5 checksum"
+  ESFileId:
+    type: "object"
+    properties:
+      repositoryName:
+        type: "string"
+        example: "d290f1ee-6c54-4b01-90e6-d701748f0851"
+        description: "The repository's ID"
+      relativeId:
+        type: "string"
+        description: "The file ID in the repository"
+    example: "d290f1ee-6c54-4b01-90e6-d701748f0851"
+  ESFileList:
+    type: "object"
+    properties:
+      path:
+        type: "string"
+        description: "The list of files"
+      items:
+        type: "array"
+        description: "The list of files"
+        items:
+          $ref: "#/definitions/ESFile"
+  ESPermission:
+    type: "object"
+    properties:
+      type:
+        type: "string"
+        description: "The permission type. Allow or deny"
+        enum:
+        - "allow"
+        - "deny"
+      accountType:
+        type: "string"
+        description: "The account type."
+        enum:
+        - "user"
+        - "group"
+        - "domain"
+        - "anyone"
+      userId:
+        type: "string"
+        description: "The id (can be its email or user code) of the user or group\
+          \ this permission refers to"
+      domain:
+        type: "string"
+        description: "The domain name of the entity this permission refers to. It\
+          \ is present when the permission type is user, group or domain"
+      roles:
+        type: "array"
+        items:
+          type: "string"
+          description: "The persmision role for this user"
+          enum:
+          - "owner"
+          - "reader"
+          - "writer"
+  ESParent:
+    type: "object"
+    properties:
+      id:
+        $ref: "#/definitions/ESFileId"
+      paths:
+        type: "array"
+        description: "The list of parent names in order from root to direct parent\
+          \ file"
+        items:
+          type: "string"
+          example: "rootFolder"
+  ESUser:
+    type: "object"
+    properties:
+      displayName:
+        type: "string"
+        description: "The owner's display name"
+      id:
+        type: "string"
+        description: "The email address of the owner"
+parameters:
+  fileId:
+    name: "id"
+    in: "path"
+    description: "The file's ID"
+    required: true
+    type: "string"
+  targetId:
+    name: "targetId"
+    in: "query"
+    description: "Target file's ID"
+    required: true
+    type: "string"
+  file:
+    in: "body"
+    name: "file"
+    description: "File"
+    required: false
+    schema:
+      $ref: "#/definitions/ESFile"
+  repositoryId:
+    name: "id"
+    in: "path"
+    description: "Repository Id"
+    required: true
+    type: "string"
+  maxResultFile:
+    name: "maxResult"
+    in: "query"
+    description: "Maximum number of files to return. Acceptable values are 0 to 1000.\
+      \ Use -1 for no limit"
+    required: false
+    type: "integer"
+    default: 100
+  pageTokenFile:
+    name: "pageToken"
+    in: "query"
+    description: "Page token for files"
+    required: false
+    type: "string"
+  fromDate:
+    name: "fromDate"
+    in: "query"
+    description: "Return only files modified after this date"
+    required: true
+    type: "string"
+    format: "date-time"
+  getPermissions:
+    name: "getPermissions"
+    in: "query"
+    description: "set true if you want to get permissions at the same you get files"
+    required: false
+    type: "boolean"
+    default: false
